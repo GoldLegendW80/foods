@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
 use App\Models\Restaurant;
 use Illuminate\Http\Request;
 
@@ -9,54 +10,63 @@ class RestaurantController extends Controller
 {
     public function index()
     {
-        $restaurants = Restaurant::paginate(6);
+        $restaurants = Restaurant::with('categories')->paginate(15);
+        $categories = Category::all();
 
-        return view('restaurants.dashboard', compact('restaurants'));
+        return view('restaurants.index', compact('restaurants', 'categories'));
     }
 
     public function store(Request $request)
     {
         $validatedData = $request->validate([
-            'nom' => 'required|max:255',
+            'nom' => 'required',
             'adresse' => 'required',
+            'note' => 'required|numeric|min:1|max:5',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
-            'type_cuisine' => 'required|max:255',
-            'note' => 'required|integer|min:1|max:5',
+            'categories' => 'array',
         ]);
 
-        Restaurant::create($validatedData);
+        $restaurant = Restaurant::create($validatedData);
 
-        return redirect()->route('restaurants.index')->with('success', 'Restaurant ajouté avec succès.');
+        if ($request->has('categories')) {
+            $restaurant->categories()->sync($request->categories);
+        }
+
+        return redirect()->route('restaurants.index')->with('success', 'Restaurant ajouté avec succès');
     }
 
     public function update(Request $request, Restaurant $restaurant)
     {
         $validatedData = $request->validate([
-            'nom' => 'required|max:255',
+            'nom' => 'required',
             'adresse' => 'required',
+            'note' => 'required|numeric|min:1|max:5',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
-            'type_cuisine' => 'required|max:255',
-            'note' => 'required|integer|min:1|max:5',
+            'categories' => 'array',
         ]);
 
         $restaurant->update($validatedData);
 
-        return redirect()->route('restaurants.index')->with('success', 'Restaurant mis à jour avec succès.');
+        if ($request->has('categories')) {
+            $restaurant->categories()->sync($request->categories);
+        } else {
+            $restaurant->categories()->detach();
+        }
+
+        return redirect()->route('restaurants.index')->with('success', 'Restaurant modifié avec succès');
     }
 
     public function destroy(Restaurant $restaurant)
     {
         $restaurant->delete();
 
-        return redirect()->route('restaurants.index')->with('success', 'Restaurant supprimé avec succès.');
+        return response()->json(['success' => true]);
     }
 
     public function getAll()
     {
-        $restaurants = Restaurant::all();
-
-        return response()->json($restaurants);
+        return Restaurant::with('categories')->get();
     }
 }

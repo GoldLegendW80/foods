@@ -2,58 +2,75 @@
 
 namespace Database\Seeders;
 
+use App\Models\Category;
 use App\Models\Restaurant;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
+    /**
+     * Seed the application's database.
+     */
     public function run(): void
     {
+        // Création des catégories
+        $categories = [
+            'Française',
+            'Espagnole',
+            'Africaine',
+        ];
+
+        $categoryModels = [];
+        foreach ($categories as $categoryName) {
+            $categoryModels[$categoryName] = Category::create(['name' => $categoryName]);
+        }
+
+        // Création des restaurants
         $restaurants = [
             [
-                'nom' => 'Le Petit Bistro',
-                'adresse' => '15 Rue de la Paix, 75002 Paris',
-                'latitude' => 48.8698,
-                'longitude' => 2.3315,
-                'type_cuisine' => 'Française',
-                'note' => 4,
-            ],
-            [
-                'nom' => 'Sushi Master',
-                'adresse' => '8 Avenue des Champs-Élysées, 75008 Paris',
-                'latitude' => 48.8729,
-                'longitude' => 2.3021,
-                'type_cuisine' => 'Japonaise',
+                'nom' => 'Casa Gaia',
+                'adresse' => '16 bis Rue Latour, 33000 Bordeaux',
                 'note' => 5,
+                'latitude' => 44.85053000,
+                'longitude' => -0.57109000,
+                'category' => 'Française',
             ],
             [
-                'nom' => 'La Pizzeria',
-                'adresse' => '22 Rue du Faubourg Saint-Antoine, 75012 Paris',
-                'latitude' => 48.8515,
-                'longitude' => 2.3726,
-                'type_cuisine' => 'Italienne',
+                'nom' => 'Bodega',
+                'adresse' => '4 Rue Piliers de Tutelle, 33000 Bordeaux',
+                'note' => 2,
+                'latitude' => 44.84176000,
+                'longitude' => -0.57367000,
+                'category' => 'Espagnole',
+            ],
+            [
+                'nom' => 'La Douce Parenthèse',
+                'adresse' => '8 bis Rue Maucoudinat, 33000 Bordeaux',
                 'note' => 3,
+                'latitude' => 44.83904000,
+                'longitude' => -0.57096000,
+                'category' => 'Française',
             ],
             [
-                'nom' => 'Le Coq Au Vin',
-                'adresse' => '30 Rue Dauphine, 75006 Paris',
-                'latitude' => 48.8539,
-                'longitude' => 2.3390,
-                'type_cuisine' => 'Française',
+                'nom' => 'Okra',
+                'adresse' => '51 Rue Judaïque, 33000 Bordeaux',
                 'note' => 4,
-            ],
-            [
-                'nom' => 'Chez Léon',
-                'adresse' => '24 Rue de la Butte aux Cailles, 75013 Paris',
-                'latitude' => 48.8272,
-                'longitude' => 2.3530,
-                'type_cuisine' => 'Belge',
-                'note' => 4,
+                'latitude' => 44.84147000,
+                'longitude' => -0.58384000,
+                'category' => 'Africaine',
             ],
         ];
 
-        foreach ($restaurants as $restaurant) {
-            Restaurant::create($restaurant);
+        foreach ($restaurants as $restaurantData) {
+            $category = $restaurantData['category'];
+            unset($restaurantData['category']);
+
+            $restaurant = Restaurant::create($restaurantData);
+
+            // Associer le restaurant à sa catégorie
+            if (isset($categoryModels[$category])) {
+                $restaurant->categories()->attach($categoryModels[$category]->id);
+            }
         }
     }
 }

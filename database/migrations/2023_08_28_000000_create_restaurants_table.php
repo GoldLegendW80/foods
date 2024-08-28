@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('nom');
             $table->string('adresse');
-            $table->string('type_cuisine');
             $table->integer('note');
             $table->decimal('latitude', 10, 8);
             $table->decimal('longitude', 11, 8);
