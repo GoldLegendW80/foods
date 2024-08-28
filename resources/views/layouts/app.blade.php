@@ -30,9 +30,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('restaurants.index') }}">Tableau de bord</a>
-                    </li>
+                    
                     <!-- Vous pouvez ajouter d'autres liens de navigation ici si nécessaire -->
                 </ul>
             </div>
