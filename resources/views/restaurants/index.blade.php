@@ -55,10 +55,40 @@
     </div>
 
     <div class="row justify-content-center mb-4">
-        <div class="col-auto">
-            {{ $restaurants->links() }}
-        </div>
+    <div class="col-auto">
+    <nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {{-- Bouton Précédent --}}
+        <li class="page-item {{ $restaurants->onFirstPage() ? 'disabled' : '' }}">
+            <a class="page-link bg-dark {{ $restaurants->onFirstPage() ? 'text-light-muted' : 'text-accent' }} border-accent" 
+               href="{{ $restaurants->previousPageUrl() }}" 
+               {{ $restaurants->onFirstPage() ? 'aria-disabled="true"' : '' }}>
+                « Précédent
+            </a>
+        </li>
+        
+        {{-- Numéros de page --}}
+        @foreach ($restaurants->getUrlRange(1, $restaurants->lastPage()) as $page => $url)
+            <li class="page-item {{ $page == $restaurants->currentPage() ? 'active' : '' }}">
+                <a class="page-link bg-dark {{ $page == $restaurants->currentPage() ? 'bg-accent text-light-muted' : 'text-accent' }} border-accent" 
+                   href="{{ $url }}">
+                    {{ $page }}
+                </a>
+            </li>
+        @endforeach
+        
+        {{-- Bouton Suivant --}}
+        <li class="page-item {{ !$restaurants->hasMorePages() ? 'disabled' : '' }}">
+            <a class="page-link bg-dark {{ !$restaurants->hasMorePages() ? 'text-light-muted' : 'text-accent' }} border-accent" 
+               href="{{ $restaurants->nextPageUrl() }}" 
+               {{ !$restaurants->hasMorePages() ? 'aria-disabled="true"' : '' }}>
+                Suivant »
+            </a>
+        </li>
+    </ul>
+</nav>
     </div>
+</div>
 
     <div class="row">
         <div class="col">
@@ -199,4 +229,29 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+@endpush
+
+@push('styles')
+<style>
+   .pagination .page-link {
+    transition: all 0.3s ease;
+}
+
+.pagination .page-item.disabled .page-link {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination .page-item.active .page-link {
+    font-weight: bold;
+}
+
+.pagination .page-link:hover:not(.disabled) {
+    background-color: #495057 !important;
+}
+
+.text-light-muted {
+        color: #a0aec0 !important;
+    }
+</style>
 @endpush
