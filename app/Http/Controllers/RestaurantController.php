@@ -10,7 +10,7 @@ class RestaurantController extends Controller
 {
     public function index()
     {
-        $restaurants = Restaurant::with('categories')->paginate(15);
+        $restaurants = Restaurant::with('categories')->paginate(6);
         $categories = Category::all();
 
         return view('restaurants.index', compact('restaurants', 'categories'));
@@ -62,7 +62,7 @@ class RestaurantController extends Controller
     {
         $restaurant->delete();
 
-        return response()->json(['success' => true]);
+        return redirect()->route('restaurants.index')->with('success', 'Restaurant modifié avec succès');
     }
 
     public function getAll()

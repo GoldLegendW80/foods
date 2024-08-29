@@ -25,7 +25,7 @@
                     <p class="card-text mb-2 text-light">
                         <i class="fas fa-tags me-2 text-accent"></i>
                         @foreach($restaurant->categories as $category)
-                            <span class="badge bg-accent text-dark me-1">{{ $category->name }}</span>
+                            <span class="badge bg-accent">{{ $category->name }}</span>
                         @endforeach
                     </p>
                     <div class="mt-auto">
@@ -39,9 +39,13 @@
                             <button class="btn btn-outline-accent btn-sm" data-bs-toggle="modal" data-bs-target="#editRestaurantModal{{ $restaurant->id }}">
                                 <i class="fas fa-edit me-1"></i>Modifier
                             </button>
-                            <button class="btn btn-outline-danger btn-sm delete-restaurant" data-id="{{ $restaurant->id }}">
-                                <i class="fas fa-trash me-1"></i>Supprimer
-                            </button>
+                            <form action="{{ route('restaurants.destroy', $restaurant->id) }}" method="POST" class="d-inline delete-restaurant-form">
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-outline-danger btn-sm delete-restaurant" data-id="{{ $restaurant->id }}">
+                                    <i class="fas fa-trash me-1"></i>Supprimer
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -171,6 +175,7 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Code de la carte Leaflet (inchangé)
     const map = L.map('map').setView([44.8378, -0.5792], 12);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -181,6 +186,17 @@ document.addEventListener('DOMContentLoaded', function() {
             .addTo(map)
             .bindPopup("<b>{{ $restaurant->nom }}</b><br>{{ $restaurant->adresse }}");
     @endforeach
+
+    // Nouveau code pour la suppression des restaurants
+    document.querySelectorAll('.delete-restaurant').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Êtes-vous sûr de vouloir supprimer ce restaurant ?')) {
+                const form = this.closest('.delete-restaurant-form');
+                form.submit();
+            }
+        });
+    });
 });
 </script>
 @endpush
